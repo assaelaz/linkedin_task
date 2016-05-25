@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+<link rel="stylesheet" href="sweetalert.css">
+
+
+<title>linkdin app</title>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.js"></script>
+<!--script src="config.js"></script-->
+<script src="app.js"></script>
+<script src="sweetalert.min.js"></script>
+<script src="controllers/linkedin.js"></script>
+
+ <div class="container" ng-controller="linkedinController" ng-init="init()">
+    <h1 style="text-align: center;">Linkedin Public Profile App</h1>
+	<button ng-show="!search_view" ng-click="search_view=true;public_url='';person.name='';person.skill=''">back</button>
+
+	<div ng-show="search_view">
+		<input ng-model="public_url" placeholder="insert linkedin public profile url"></input>
+		<button ng-show="!add_profile_loader" ng-click="add_profile()">view profile</button>
+		<img ng-show="add_profile_loader" style="background-size: 100%;width: 23px;" src="http://www.sourcebmx.com/Interface/Icons/LoadingBasketContents.gif"/>
+		<br>
+		<input ng-model="person.name" placeholder="insert name"></input>
+		<button ng-show="!search_name_loader" ng-click="search_name()">Look for pepole by name</button>
+		<img ng-show="search_name_loader" style="background-size: 100%;width: 23px;" src="http://www.sourcebmx.com/Interface/Icons/LoadingBasketContents.gif"/>
+		<br>
+		<input ng-model="person.skill" placeholder="insert skill"></input>
+		<button ng-show="!search_skill_loader" ng-click="search_skill()">Look for pepole by skill</button>
+		<img ng-show="search_skill_loader" style="background-size: 100%;width: 23px;" src="http://www.sourcebmx.com/Interface/Icons/LoadingBasketContents.gif"/>
+		<br>
+	</div>
+	<div ng-show="!search_view">
+		<h3>{{profiles.length}} were found</h3>
+		<table class="table">
+		  <thead>
+			<tr>
+			  <th>Name of the person</th>         
+			  <th>Current title</th>
+			  <th>Current position</th>
+			  <th>Summary</th>
+			  <th>List of skills</th>
+			  <th>Experience</th>
+			  <th>Profile Scoring</th>
+			  <th>&nbsp;</th>
+			</tr>
+		  </thead>
+		  <tbody>
+			
+			<tr ng-repeat="profile in profiles">
+			  <td><div style="width:150px;" >{{profile.fullname}}</div></td>
+			  <td><div style="width:150px;" >{{profile.current}}</div></td>
+			  <td><div style="width:150px;" >{{profile.experience.current[0].title}}</div></td>
+			  <td><div style="width:300px;overflow-y:auto;overflow-x:hidden;height:122px;">{{profile.summary}}</div></td>
+			  <td>
+				  <div style="width:200px;overflow-y:auto;overflow-x:hidden;height:122px;" >
+					<div ng-repeat="skill in profile.skills">{{skill}}</div>
+				  </div>
+			   </td>
+			   <td>
+				<div style="font-size: 17px;">Current Experience: </div>			
+				<div style="width:300px;" ng-repeat="current in profile.experience.current">
+					
+					<span style="width:300px;text-decoration: underline;font-weight: bolder;cursor:pointer" ng-click="current_desc_click=!current_desc_click">{{current.title}} at {{current.org}}</span>
+					<span ng-show="!!current.desc && !current_desc_click" style="color: #7079E8;font-weight:bolder;margin-left:10px;cursor:pointer;border-radius:-4px;"  ng-click="current_desc_click=true">+</span>
+					<span ng-show="!!current.desc && current_desc_click" style="color: #7079E8;font-weight:bolder;margin-left:10px;cursor:pointer;border-radius:-4px;" ng-click="current_desc_click=false">-</span>
+					<div ng-show="!!current.desc && current_desc_click" style="width:300px;overflow-y:auto;overflow-x:hidden;height:122px;" ng-bind-html="renderHtml(current.desc)"></div>
+					<hr>
+				</div>
+			
+				<div style="font-size: 17px;">Past Experience: </div>
+				<div style="width:300px;" ng-repeat="past in profile.experience.past">
+				
+					<span style="text-decoration: underline;font-weight: bolder;cursor:pointer" ng-click="past_desc_click=!past_desc_click">{{past.title}} at {{past.org}}</span>
+					<span style="color: #7079E8;font-weight:bolder;margin-left:10px;cursor:pointer;border-radius:-4px;" ng-show="!!past.desc && !past_desc_click" ng-click="past_desc_click=true">+</span>
+					<span style="color: #7079E8;font-weight:bolder;margin-left:10px;cursor:pointer;border-radius:-4px;" ng-show="!!past.desc && past_desc_click" ng-click="past_desc_click=false">-</span>
+					<div ng-show="!!past.desc && past_desc_click" style="width:300px;overflow-y:auto;overflow-x:hidden;height:122px;" ng-bind-html="renderHtml(past.desc)"></div>
+					<hr>
+				</div>
+			   </td>
+			   <td><div style="width:150px;" >{{profile.profile_scoring}}</div></td>
+
+
+			</tr>
+		  </tbody>
+		</table>
+	</div>
+  </div>
+</body>
+</html>
